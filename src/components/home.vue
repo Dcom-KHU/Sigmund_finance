@@ -1,13 +1,14 @@
 <template>
     <div id="home_wrapper">
-        <div>
+        <login v-if="!islogin"/>
+        <div id="main">
             <p id="main_text">D.com Finance</p>
         </div>
         <div id="navigator">
             <div>
                 <div id="mark"></div>
                 <div id="link">
-                    <router-link :to="{ name:'usersList'}">UserList</router-link>
+                    <router-link :to="{ name:'userList'}">UserList</router-link>
                     <router-link :to="{ name:''}">Finance</router-link>
                 </div>
             </div>
@@ -15,8 +16,17 @@
     </div>
 </template>
 <script>
-export default {
+import login from "./login"
 
+export default {
+    components:{
+        login
+    },
+    data(){
+        return{
+            islogin : false,
+        }
+    }
 }
 </script>
 <style scoped>
@@ -27,9 +37,10 @@ export default {
     height: 100vh;
     background-image: url("../assets/home-background.png");
 }
-#home_wrapper > div:nth-child(1){
+#main{
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
 }
 #main_text{
     margin: 0px 0px 100px 100px;

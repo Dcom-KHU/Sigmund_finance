@@ -1,11 +1,15 @@
 <template>
-    <div>
-        
+    <div id="list_wrapper">
+        <navigator/>
     </div>
 </template>
 <script>
-export default {
+import navigator from "./commons/navigator"
 
+export default {
+    components:{
+        navigator
+    }
 }
 </script>
 <style scoped>
