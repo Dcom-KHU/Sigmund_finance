@@ -4,7 +4,7 @@
     </div>
 </template>
 <script>
-import navigator from "./commons/navigator"
+import navigator from "../commons/navigator"
 
 export default {
     components:{
