@@ -17,31 +17,33 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="list in userlists" :key="list.id" v-on:click="visibleTools($event, list.sid)">
+                        <tr v-for="list in userlists" :key="list.sid" v-on:click="visibleTools($event, list.sid)" :ref="'tr'+list.sid">
                             <!-- <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-bind:value=list.sid></td> -->
                             <td >{{list.sid}}</td>
                             
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.name></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.name v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.name}}</td>
                         
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.grade></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.grade v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.grade}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.status></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.status v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.status}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.position></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.position v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else class="tier_td"><span class="tier">{{list.position}}</span></td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.phone></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.phone v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.phone}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.email></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.email v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.email}}</td>
 
                             <td class="last_td" @click.stop="clickTools($event, list)">
-                                <font-awesome-icon icon="edit" v-bind:class="{'move_left' : toolState.state.modify, 'invisible' : toolState.state.delete || toolState.id === -1}" />
-                                <font-awesome-icon icon="trash-alt" v-bind:class="{'invisible' : toolState.state.modify || toolState.id === -1}"/>
+                                <i class="fas fa-edit" v-bind:class="{'move_left' : toolState.state.modify, 'invisible' : toolState.state.delete || toolState.id === -1}" ></i>
+                                <i class="fas fa-trash-alt" v-bind:class="{'invisible' : toolState.state.delete || toolState.state.modify || toolState.id === -1}"></i>
+                                <i class="true-icon" v-bind:class="{'invisible' : !toolState.state.delete}"></i>
+                                <i class="false-icon" v-bind:class="{'invisible' : !toolState.state.delete}"></i>
                            </td>
                         </tr>
                     </tbody>
@@ -51,7 +53,8 @@
     </div>
 </template>
 <script>
-import navigator from "../commons/navigator"
+import Vue from 'vue';
+import navigator from "../commons/navigator";
 
 export default {
     components:{
@@ -109,15 +112,11 @@ export default {
             this.clickedElement.classList.add('visible');
         },
         clickTools(event, list){
-            let ele = event.target;
-            let icon = null;
-            if(!ele.getAttribute('data-icon')){
-                ele = ele.parentElement;
-            }
-
-            icon = ele.getAttribute('data-icon');
+            let className = event.target.classList.value;
+            console.log(className);
             
-            if(icon === "edit"){
+            //테이블 수정
+            if(className.search("edit") !== -1 || event.key === "Enter"){
                 //상태 갱신
                 this.updateToolState("modify");
 
@@ -136,15 +135,46 @@ export default {
                     }
                     this.resetToolState();
                 }
-            }else if(icon === "trash-alt"){
+            }
+            //테이블 삭제
+            else if(className.search("trash") !== -1 || className.search("true") !== -1 || className.search("false") !== -1){
                 //상태 갱신
                 this.updateToolState("delete");
+
+                //삭제 확인
+                if(className.search("true") !== -1){
+                    for(let index in this.userlists){
+                        if(this.userlists[index].sid === list.sid){
+                            let refIndex = `tr${list.sid}`;
+                            let refEle = this.$refs[refIndex][0];
+                            let refEleChild = refEle.children;
+                            console.log(this.$refs[refIndex]);
+                            console.log(refEle);
+                   
+                            for(let i = 0; i < refEleChild.length ; i++){
+                                refEleChild[i].classList.add('delete');
+                            }
+
+                            setTimeout(() => {
+                                Vue.delete(this.userlists, index);
+                            }, 500);
+                            
+                            break;
+                        } 
+                    }
+                }
+                //삭제 취소
+                else if(className.search("false") !== -1){
+                    this.resetToolState();
+                }
 
                 var remove = () => {
 
                 }
             } 
         },
+
+        //state 관련 method
         printToolState(){
             console.log(this.toolState.id, this.toolState.state.whole, this.toolState.state.modify, this.toolState.state.delete );
         },
@@ -212,6 +242,7 @@ tbody td{
     width: 130px;
     height: 42px;
     padding: 8px 0px;
+    transition: 0.35s;
 }
 tbody td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(5), td:last-child{
     width: 80px;
@@ -254,9 +285,22 @@ tbody tr:hover td:not(:last-child){
     padding: 2.5px 5px;
     border-radius: 15px;
 }
-#table_state{
-    width: 100px;
+.true-icon::before{
+    content: "\f00c";
+    font-family: 'Font Awesome\ 5 Free';
+    font-weight: 600;
+    font-style: normal;
+}   
+.false-icon::before{
+    content: "\f00d";
+    font-family: 'Font Awesome\ 5 Free';
+    font-weight: 600;
+    font-style: normal;
+}   
+.delete{
+    padding-top: 16px;
+    padding-bottom: 0px;
+    opacity: 0;
 }
-
 
 </style>
