@@ -18,25 +18,25 @@
                     </thead>
                     <tbody>
                         <tr v-for="list in userlists" :key="list.id" v-on:click="visibleTools($event, list.sid)">
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-bind:value=list.sid></td>
-                            <td v-else>{{list.sid}}</td>
+                            <!-- <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-bind:value=list.sid></td> -->
+                            <td >{{list.sid}}</td>
                             
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-bind:value=list.name></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.name></td>
                             <td v-else>{{list.name}}</td>
                         
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-bind:value=list.grade></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.grade></td>
                             <td v-else>{{list.grade}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-bind:value=list.status></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.status></td>
                             <td v-else>{{list.status}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-bind:value=list.position></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.position></td>
                             <td v-else class="tier_td"><span class="tier">{{list.position}}</span></td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-bind:value=list.phone></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.phone></td>
                             <td v-else>{{list.phone}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-bind:value=list.email></td>
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.email></td>
                             <td v-else>{{list.email}}</td>
 
                             <td class="last_td" @click.stop="clickTools($event, list)">
@@ -79,6 +79,14 @@ export default {
                     modify: false,
                     delete: false
                 }
+            },
+            modifyForm:{
+                name : "",
+                grade: "",
+                status: "",
+                email: "",
+                phone: "",
+                position: ""
             }
        };
     },
@@ -113,13 +121,21 @@ export default {
                 //상태 갱신
                 this.updateToolState("modify");
 
-                //modify state가 false일 때 실행하는 함수
-                let modify = (ele, list) => {
-                 
+                //modify 상태 start
+                if(this.getToolState('modify')){
+                    for(status in this.modifyForm){
+                        this.modifyForm[status] = list[status];
+                    }
                 }
 
-                if(!this.getToolState('modify'))
+                //modify 상태 end (폼 갱신 및 리셋)
+                if(!this.getToolState('modify')){
+                    for(status in this.modifyForm){
+        
+                        list[status] = this.modifyForm[status];
+                    }
                     this.resetToolState();
+                }
             }else if(icon === "trash-alt"){
                 //상태 갱신
                 this.updateToolState("delete");
@@ -144,11 +160,18 @@ export default {
             return this.toolState.state[value];
         },
         resetToolState(){
+            //modifyForm reset
+            for(status in this.modifyForm){
+                this.modifyForm[status] = "";
+            }
+
+            //상태 reset
             this.toolState.id = -1; 
                
             for(let index in this.toolState.state){
                 this.toolState.state[index] = false;
             }
+
             this.printToolState();
         }
     }
