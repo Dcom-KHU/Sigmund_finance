@@ -1,6 +1,9 @@
 <template>
     <div id="list_wrapper">
         <navigator/>
+        <section id="control_section">
+            <i id="add_user" class="far fa-plus-square" v-on:click="clickAddUser($event)"></i>
+        </section>
         <section id="table_section">
             <div id="table_wrapper">
                 <table>
@@ -17,9 +20,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="list in userlists" :key="list.sid" v-on:click="visibleTools($event, list.sid)" :ref="'tr'+list.sid">
-                            <!-- <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-bind:value=list.sid></td> -->
-                            <td >{{list.sid}}</td>
+                        <tr v-for="list in userlists" :key="list.sid" v-on:click="visibleTools(list.sid)" :ref="'tr'+list.sid">
+                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.sid v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-else>{{list.sid}}</td>
                             
                             <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.name v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.name}}</td>
@@ -80,10 +83,12 @@ export default {
                 state:{
                     whole: false,
                     modify: false,
-                    delete: false
+                    delete: false,
+                    add: false,
                 }
             },
             modifyForm:{
+                sid : "",
                 name : "",
                 grade: "",
                 status: "",
@@ -94,16 +99,43 @@ export default {
        };
     },
     methods:{
-        visibleTools(event, list_sid){
+        clickAddUser(event){
+            let tempId = 0;
+            let refIndex = `tr${tempId}`;
+            this.tempkey++;
+
+            if(this.resetToolState() === -1){return;}
+
+            this.$set(this.userlists, this.userlists.length, 
+            {
+                sid:tempId,
+                name:"", 
+                grade:"", 
+                status:"", 
+                email:"", 
+                phone:"", 
+                position:""
+            });
+
+            this.visibleTools(tempId);
+            this.updateToolState("whole",tempId);
+            this.updateToolState("modify");
+            this.updateToolState("add");
+
+            //추가된 list를 찾아서 버튼 활성화
+            this.$nextTick(()=>{
+                this.$refs[refIndex][0].lastChild.classList.add('visible');
+
+                //포커싱
+            })
+        },
+        visibleTools(list_sid){
             if(list_sid === this.toolState.id)
                 return;
                 
             //이전 상태 삭제
-            this.resetToolState();
+            if(this.resetToolState() === -1){return;}
             this.updateToolState("whole", list_sid);
-
-            if(event.target.tagName === "Path")
-                return;
             
             if(this.clickedElement)
                 this.clickedElement.classList.remove('visible');
@@ -113,7 +145,6 @@ export default {
         },
         clickTools(event, list){
             let className = event.target.classList.value;
-            console.log(className);
             
             //테이블 수정
             if(className.search("edit") !== -1 || event.key === "Enter"){
@@ -128,12 +159,11 @@ export default {
                 }
 
                 //modify 상태 end (폼 갱신 및 리셋)
-                if(!this.getToolState('modify')){
+                else if(!this.getToolState('modify')){
                     for(status in this.modifyForm){
-        
                         list[status] = this.modifyForm[status];
                     }
-                    this.resetToolState();
+                    if(this.resetToolState("f") === -1){return;}
                 }
             }
             //테이블 삭제
@@ -148,15 +178,13 @@ export default {
                             let refIndex = `tr${list.sid}`;
                             let refEle = this.$refs[refIndex][0];
                             let refEleChild = refEle.children;
-                            console.log(this.$refs[refIndex]);
-                            console.log(refEle);
                    
                             for(let i = 0; i < refEleChild.length ; i++){
                                 refEleChild[i].classList.add('delete');
                             }
 
                             setTimeout(() => {
-                                Vue.delete(this.userlists, index);
+                                this.$delete(this.userlists, index);
                             }, 500);
                             
                             break;
@@ -165,11 +193,7 @@ export default {
                 }
                 //삭제 취소
                 else if(className.search("false") !== -1){
-                    this.resetToolState();
-                }
-
-                var remove = () => {
-
+                    if(this.resetToolState() === -1){return;}
                 }
             } 
         },
@@ -183,13 +207,22 @@ export default {
             
             if(args.length !== 0)  
                 this.toolState.id = args[0];
-            
+
             this.printToolState();
         },
         getToolState(value){
             return this.toolState.state[value];
         },
-        resetToolState(){
+        resetToolState(...option){
+            if(option.length !==0){
+                //f
+            }else{
+                if(this.getToolState('add')){
+                    alert("현재 추가 중인 폼이 있습니다.")
+                    return -1;
+                }
+            }
+
             //modifyForm reset
             for(status in this.modifyForm){
                 this.modifyForm[status] = "";
@@ -208,16 +241,34 @@ export default {
 }
 </script>
 <style scoped>
-#table_section{
-    display:flex;
+#list_wrapper{
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
 }
+#list_wrapper > *{
+    width:850px;
+}
+/* about control */
+#control_section{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+#add_user{
+    font-size: 25px;
+    transition: 0.2s;
+}
+#add_user:hover{
+    color:#fc2a7b;
+}
+
+/* about table */
 #table_wrapper{
     padding: 10px 5px;
     border: 1px solid rgba(0,0,0,.12);
     box-shadow: 0 1px 3px 0 rgba(0,0,0,.24), 0 1px 2px 0 rgba(0,0,0,.24);
-    max-width: 80%;
     height:450px;
     overflow-x:auto;  
 }
@@ -302,5 +353,4 @@ tbody tr:hover td:not(:last-child){
     padding-bottom: 0px;
     opacity: 0;
 }
-
 </style>
