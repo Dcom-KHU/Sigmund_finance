@@ -17,6 +17,8 @@
 </template>
 <script>
 import login from "./login"
+import eventBus from '../event/eventBus'
+
 
 export default {
     components:{
@@ -26,6 +28,11 @@ export default {
         return{
             islogin : false,
         }
+    },
+    created(){
+        eventBus.$on("login", (data)=>{
+            this.islogin = data;
+        })
     }
 }
 </script>
@@ -35,7 +42,7 @@ export default {
     flex-direction: row;
     justify-content: space-between;
     height: 100vh;
-    background-image: url("../assets/home-background.png");
+    background-image: url("../../assets/home-background.png");
 }
 #main{
     display: flex;
