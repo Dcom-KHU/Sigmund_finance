@@ -76,7 +76,7 @@ UserSchema
 UserSchema
 .virtual('url')
 .get(function() {
-    return '/user/' + this._id;
+    return '/api/user/' + this._id;
 });
 
 module.exports = mongoose.model('User', UserSchema);
