@@ -38,7 +38,7 @@ var UserSchema = new Schema({
         enum: ['Attending', 'Leave', 'Military leave', 'Graduated'], 
         default: 'Leave'
     },
-    posision: {
+    position: {
         type: String,
         enum: ['Admin', 'Member'],
         default: 'Member'
