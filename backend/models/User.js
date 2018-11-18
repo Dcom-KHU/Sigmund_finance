@@ -38,8 +38,8 @@ var UserSchema = new Schema({
     status: {
         type: String, 
         required: [true, "Please check status"],
-        enum: ['Attending', 'Leave', 'Military leave', 'Graduated'], 
-        default: 'Leave'
+        enum: ['Require Aprove','Attending', 'Leave', 'Military leave', 'Graduated'], 
+        default: 'Require Aprove'
     },
     position: {
         type: String,
@@ -54,8 +54,8 @@ var UserSchema = new Schema({
     },
     phone: {
         type: String, 
-        min: 12, 
-        max: 13
+        min: 10, 
+        max: 12
     },
     email: {
         type: String, 
@@ -63,7 +63,6 @@ var UserSchema = new Schema({
     },
     lastlogin: {
         type: Date,
-        required: true
     },
     reg_date: {
         type: Date,
@@ -83,7 +82,7 @@ UserSchema
 UserSchema
 .virtual('url')
 .get(function() {
-    return '/api/user/' + this._id;
+    return '/api/users/' + this._id;
 });
 
 module.exports = mongoose.model('User', UserSchema);
