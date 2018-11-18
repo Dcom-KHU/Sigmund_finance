@@ -1,7 +1,14 @@
-var Finance = require('../model/Finance');
+var Finance = require('../models/Finance');
+var User = require('../models/User')
 
 exports.finance_list = function(req, res, next) {
-    res.send('NOT IMPLEMENTED: finance list');
+    Finance.find({})
+    .populate('user', 'name')
+    .exec(function(err, list_finances) {
+        if(err) { return next(err); }
+        // SUCCESS
+        res.render('finance_list', {title: 'Finances list', finances_list: list_finances})
+    });
 };
 
 exports.finance_detail = function(req, res, next) {

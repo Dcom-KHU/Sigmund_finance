@@ -1,0 +1,30 @@
+extends layout
+
+block content
+    h1= title
+
+    table(border='1', width='80%')
+        thead
+            tr 
+                th name
+                th grade
+                th student id
+                th status
+                th position
+                th active
+                th email
+                th phone
+        tbody
+            each user in user_list
+                tr
+                    td
+                        a(href=user.url) #{user.name}
+                    td #{user.grade}
+                    td #{user.student_id}
+                    td #{user.status}
+                    td #{user.position}
+                    td #{user.is_active}
+                    td #{user.email}
+                    td #{user.phone} 
+            else
+                li There is no users.

@@ -1,7 +1,14 @@
-var User = require('../model/User');
+var User = require('../models/User');
+const { body,validationResult } = require('express-validator/check');
+const { sanitizeBody } = require('express-validator/filter');
 
 exports.user_list = function(req, res, next){
-    res.send('NOT IMPLEMENTED: user list');
+    User.find({}, 'name grade student_id status position is_active email phone')
+    .exec(function(err, list_user) {
+        if(err) { return next(err); }
+        // Success
+        res.render('user_list', {title: 'User List', user_list: list_user});
+    });
 };
 
 exports.user_detail = function(req, res, next){
@@ -9,12 +16,13 @@ exports.user_detail = function(req, res, next){
 };
 
 exports.user_create_get = function(req, res, next){
-    res.send('NOT IMPLEMENTED: user create get');
+    res.render('user_form', {title: 'Create User'});
 };
 
-exports.user_create_post = function(req, res, next){
-    res.send('NOT IMPLEMENTED: user create post');
-};
+exports.user_create_post = [
+    // Validate
+    body()
+];
 
 exports.user_delete_get = function(req, res, next){
     res.send('NOT IMPLEMENTED: user delete get');

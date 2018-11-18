@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var moment = require('moment');
 
 var Schema = mongoose.Schema;
 
@@ -46,6 +47,13 @@ FinanceSchema
 .virtual('url')
 .get(function() {
     return '/api/finance/' + this._id;
+});
+
+// Virtual for finance's use_date formatted
+FinanceSchema
+.virtual('use_date_formatted')
+.get(function(){
+    return moment(this.use_date).format('YYYY. MM. DD.');
 });
 
 module.exports = mongoose.model('Finance', FinanceSchema);

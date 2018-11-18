@@ -4,6 +4,12 @@ var router = express.Router();
 var user_controller = require('../controllers/userController');
 var finance_controller = require('../controllers/financeController');
 
+// api
+router.get('/', function(req, res){
+    res.send({title: "api main"});
+})
+
+
 // USER 
 // create
 router.get('/users/create', user_controller.user_create_get);
@@ -25,21 +31,21 @@ router.get('/users', user_controller.user_list);
 
 // FINANCE
 // create
-router.get('/finance/create', finance_controller.finance_create_get);
+router.get('/finances/create', finance_controller.finance_create_get);
 router.post('/finance/create', finance_controller.finance_create_post);
 
 // delete
-router.get('/finance/:id/delete', finance_controller.finance_delete_get);
-router.post('/finance/:id/delete', finance_controller.finance_delete_post);
+router.get('/finances/:id/delete', finance_controller.finance_delete_get);
+router.post('/finances/:id/delete', finance_controller.finance_delete_post);
 
 // update
-router.get('/finance/:id/update', finance_controller.finance_update_get);
-router.post('/finance/:id/update', finance_controller.finance_update_post);
+router.get('/finances/:id/update', finance_controller.finance_update_get);
+router.post('/finances/:id/update', finance_controller.finance_update_post);
 
 // detail
-router.get('/finance/:id', finance_controller.finance_detail);
+router.get('/finances/:id', finance_controller.finance_detail);
 
 // list
-router.get('/finance', finance_controller.finance_list);
+router.get('/finances', finance_controller.finance_list);
 
 module.exports = router;
