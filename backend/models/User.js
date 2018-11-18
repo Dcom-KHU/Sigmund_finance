@@ -4,24 +4,26 @@ var Schema = mongoose.Schema;
 
 // User schema
 var UserSchema = new Schema({
-    userid: {
+    user_id: {
         type: String, 
-        required: true, 
-        max:20
+        required: [true, "Please check ID"], 
+        min: 5,
+        max: 20
     },
     password: {
         type: String, 
-        required: true,
+        required: [true, "Please check password"],
+        min: 10,
         max: 30
     },
     name: {
         type: String, 
-        required: true,
+        required: [true, "Please check name"],
         max: 10
     },
     grade: {
         type: Number, 
-        required: true, 
+        required: [true, "Please check grade"],
         min: 1, 
         max: 6, 
         set: v => Math.round(v), 
@@ -29,23 +31,26 @@ var UserSchema = new Schema({
     },
     student_id: {
         type: String, 
-        required: true, 
+        required: [true, "Please check student id"],
         min: 10, 
         max: 10
     },
     status: {
         type: String, 
+        required: [true, "Please check status"],
         enum: ['Attending', 'Leave', 'Military leave', 'Graduated'], 
         default: 'Leave'
     },
     position: {
         type: String,
+        required: [true, "Please check position"],
         enum: ['Admin', 'Member'],
         default: 'Member'
     },
-    is_inactive: {
+    is_active: {
         type: Boolean, 
-        default: false
+        required: true,
+        default: true
     },
     phone: {
         type: String, 
@@ -57,10 +62,12 @@ var UserSchema = new Schema({
         max: 30
     },
     lastlogin: {
-        type: Date
+        type: Date,
+        required: true
     },
     reg_date: {
         type: Date,
+        required: true,
         default: Date.now()
     }
 });
