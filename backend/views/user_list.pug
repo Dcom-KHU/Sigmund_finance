@@ -14,6 +14,7 @@ block content
                 th active
                 th email
                 th phone
+                td delete
         tbody
             each user in user_list
                 tr
@@ -26,5 +27,7 @@ block content
                     td #{user.is_active}
                     td #{user.email}
                     td #{user.phone} 
+                    td 
+                        a(href=user.url+'/delete') DELETE
             else
                 li There is no users.

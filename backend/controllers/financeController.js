@@ -54,11 +54,13 @@ exports.finance_create_post = [
         }
         else {
             // Data from form is valid.
-            // Check if User with same student id already exists.
+
             var last_total = 0;
             var last_order = 0;
+
             Finance.findOne().sort({'order': -1}).exec( function(err, recent_finance){
                 if(err) {return next(err); }
+                // if first 
                 if(recent_finance!=null) {
                     last_total = recent_finance.total;
                     last_order = recent_finance.order;
@@ -90,11 +92,32 @@ exports.finance_create_post = [
 ];
 
 exports.finance_delete_get = function(req, res, next) {
-    res.send('NOT IMPLEMENTED: finance delete get');
+    Finance.findById(req.params.id)
+    .exec(function(err, results){
+        if(err) { return next(err); }
+        if(results == null) {
+            res.redirect('/api/finances');
+        }
+        //Success
+        res.render('finance_delete', {title: 'Delete Finance', finance: results});
+    });
 };
 
 exports.finance_delete_post = function(req, res, next) {
-    res.send('NOT IMPLEMENTED: finance delete post');
+    Finance.findById(req.params.id)
+    .exec(function(err, results){
+        if(err) { return next(err);}
+        if(results==null){
+            res.redirect('/api/finances');
+        }
+        else{
+            Finance.findByIdAndRemove(req.body.financeid, function deleteFinance(err) {
+                if(err) {return next(err);}
+                // Success
+                res.redirect('/api/finances');
+            })
+        }
+    });
 };
 
 exports.finance_update_get = function(req, res, next) {

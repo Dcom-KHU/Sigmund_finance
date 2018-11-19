@@ -116,7 +116,6 @@ exports.user_delete_get = function(req, res, next){
     }, function(err, results) {
         if(err) { return next(err); }
         if(results.user == null) {  // No results.
-            console.log('no user');
             res.redirect('/api/users');
         }
         // Success.
