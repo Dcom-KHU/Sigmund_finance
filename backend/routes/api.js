@@ -32,7 +32,7 @@ router.get('/users', user_controller.user_list);
 // FINANCE
 // create
 router.get('/finances/create', finance_controller.finance_create_get);
-router.post('/finance/create', finance_controller.finance_create_post);
+router.post('/finances/create', finance_controller.finance_create_post);
 
 // delete
 router.get('/finances/:id/delete', finance_controller.finance_delete_get);

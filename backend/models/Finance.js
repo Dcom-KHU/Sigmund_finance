@@ -5,6 +5,11 @@ var Schema = mongoose.Schema;
 
 // Finance Schema
 var FinanceSchema = new Schema({
+    order: {
+        type: Number,
+        default: null,
+        required: true,
+    },
     use_date: {
         type: Date,
         default: Date.now(),
@@ -18,7 +23,6 @@ var FinanceSchema = new Schema({
     },
     detail: {
         type: String,
-        required: true,
         max: 50
     },
     user: {
@@ -46,7 +50,7 @@ var FinanceSchema = new Schema({
 FinanceSchema
 .virtual('url')
 .get(function() {
-    return '/api/finance/' + this._id;
+    return '/api/finances/' + this._id;
 });
 
 // Virtual for finance's use_date formatted

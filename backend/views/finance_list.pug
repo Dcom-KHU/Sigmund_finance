@@ -6,6 +6,7 @@ block content
     table(border='1', width='80%')
         thead
             tr
+                th order
                 th use date
                 th usage
                 th detail
@@ -13,9 +14,11 @@ block content
                 th income
                 th outcome
                 th total
+                th delete
         tbody
             each finance in finances_list
                 tr 
+                    td #{finance.order}
                     td #{finance.use_date_formatted}
                     td #{finance.usage} 
                     td #{finance.detail} 
@@ -24,3 +27,5 @@ block content
                     td #{finance.income} 
                     td #{finance.outcome} 
                     td #{finance.total}
+                    td 
+                        a(href=finance.url+'/delete') DELETE
