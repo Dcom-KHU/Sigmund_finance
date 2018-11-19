@@ -1,4 +1,6 @@
 var User = require('../models/User');
+var Finance = require('../models/Finance');
+var async = require('async');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
@@ -12,7 +14,25 @@ exports.user_list = function(req, res, next){
 };
 
 exports.user_detail = function(req, res, next){
-    res.send('NOT IMPLEMENTED: user detail');
+    async.parallel({
+        user: function(callback) {
+            User.findById(req.params.id)
+            .exec(callback);
+        },
+        users_finances: function(callback) {
+            Finance.find({'user': req.params.id}, 'use_date usage income outcome')
+            .exec(callback);
+        }
+    }, function(err, results) {
+        if (err) { return next(err); }
+        if (results.user == null ) {
+            var err = new Error('User not found.');
+            err.status = 404;
+            return next(err);
+        }
+        // Success
+        res.render('user_detail', {title: 'User Detail', user: results.user, user_finances: results.users_finances});
+    });
 };
 
 exports.user_create_get = function(req, res, next){
@@ -86,11 +106,50 @@ exports.user_create_post = [
 ];
 
 exports.user_delete_get = function(req, res, next){
-    res.send('NOT IMPLEMENTED: user delete get');
+    async.parallel({
+        user: function(callback) {
+            User.findById(req.params.id).exec(callback)
+        },
+        users_finances: function(callback) {
+            Finance.find({'user': req.params.id}).exec(callback)
+        },
+    }, function(err, results) {
+        if(err) { return next(err); }
+        if(results.user == null) {  // No results.
+            console.log('no user');
+            res.redirect('/api/users');
+        }
+        // Success.
+        res.render('user_delete', {title: 'Delete User', user: results.user, user_finances: results.users_finances});
+    });
 };
 
 exports.user_delete_post = function(req, res, next){
-    res.send('NOT IMPLEMENTED: user delete post');
+
+    async.parallel({
+        user: function(callback) {
+            User.findById(req.params.userid).exec(callback);
+        },
+        users_finances: function(callback) {
+            Finance.find({'user': req.params.userid}).exec(callback);
+        },
+    }, function(err, results) {
+        if(err) { return next(err); }
+        // Success.
+        if(results.users_finances.length > 0){
+            //User has books.
+            res.render('user_delete', {title: 'Delete User', user:  results.user, user_finances: results.users_finances});
+            return;
+        }
+        else {
+            User.findByIdAndRemove(req.body.userid, function deleteUser(err) {
+                if(err) { return next(err); }
+                // Success
+                res.redirect('/api/users')
+            });
+        }
+    });
+
 };
 
 exports.user_update_get = function(req, res, next){

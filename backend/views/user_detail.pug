@@ -1,0 +1,30 @@
+extends layout
+
+block content
+
+    h1 User: #{user.name}
+  
+    div(style='margin-left:20px;margin-top:20px')
+
+        h4 Finances
+    
+        table
+            tr 
+                th detail
+                th usage
+                th income
+                th outcome
+            each finance in user_finances 
+                tr
+                    td 
+                        a(href=finance.url) detail
+                    td #{finance.usage} 
+                    td #{finance.income} 
+                    td #{finance.outcome}
+
+            else
+                p This author has no books.
+
+    hr
+    p
+        a(href=user.url+'/delete') Delete author
