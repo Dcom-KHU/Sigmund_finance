@@ -3,6 +3,18 @@
         <navigator/>
         <section id="control_section">
             <i id="add_user" class="far fa-plus-square" v-on:click="clickAddUser($event)"></i>
+            <div id="search_user">
+                <select v-model="selectValues[0].form">
+                     <option v-for="option in searchOptions[0].options" :key="option.id">{{option}}</option>
+                </select>
+                <select v-model="selectValues[1].form">
+                    <option v-for="option in searchOptions[1].options" :key="option.id">{{option}}</option>
+                </select>
+                <select v-model="selectValues[2].form">
+                     <option v-for="option in searchOptions[2].options" :key="option.id">{{option}}</option>
+                </select>
+                <i class="fas fa-search" v-on:click="clickSearchUser($event)"></i>
+            </div>
         </section>
         <section id="table_section">
             <div id="table_wrapper">
@@ -95,14 +107,24 @@ export default {
                 email: "",
                 phone: "",
                 position: ""
-            }
-       };
+            },
+            selectValues:[
+                {form: '학년'},
+                {form: '재학여부'},
+                {form: '직책'},
+            ],
+            searchOptions:[
+                {options:['학년','1','2','3','4']},
+                {options:['재학여부','재학','휴학','군휴학','졸업','휴면',]},
+                {options:['직책','일반회원', '회장', '부회장', '총무', '교육부장', '청소부장']},
+            ],
+            test: 'test'
+        };
     },
     methods:{
         clickAddUser(event){
             let tempId = 0;
             let refIndex = `tr${tempId}`;
-            this.tempkey++;
 
             if(this.resetToolState() === -1){return;}
 
@@ -128,6 +150,34 @@ export default {
 
                 //포커싱
             })
+        },
+        clickSearchUser(event){
+            if(this.resetToolState() === -1){return;}
+
+            for(let value of this.selectValues){
+                console.log(value.form);
+            }
+                
+            //To-do 서버 연동
+            /*let baseURI = ;
+            
+            axios.get(baseURI, {
+                params:{
+                    keyword: data
+                },  
+                headers:{
+                    'Content-Type': 'application/json',
+                    'x-api-key': confidential.aws_apikey
+                }
+            })
+            .then((result) => {
+                console.log(result);
+                eventBus.$emit('getWord', result.data);
+            })
+            .catch((error) => {
+                console.log("fail")
+                console.log(error)
+            })*/
         },
         visibleTools(list_sid){
             if(list_sid === this.toolState.id)
@@ -160,6 +210,11 @@ export default {
 
                 //modify 상태 end (폼 갱신 및 리셋)
                 else if(!this.getToolState('modify')){
+                    //폼 체킹
+                    if(this.checkIsFullForm() === -1){
+                        this.updateToolState("modify");
+                        return;
+                    }
                     for(status in this.modifyForm){
                         list[status] = this.modifyForm[status];
                     }
@@ -196,6 +251,14 @@ export default {
                     if(this.resetToolState() === -1){return;}
                 }
             } 
+        },
+        checkIsFullForm(){
+            for(let index in this.modifyForm){
+                if(this.modifyForm[index] === ""){
+                    alert("모든 폼을 채워주세요.")
+                    return -1;
+                }
+            }
         },
 
         //state 관련 method
@@ -259,10 +322,26 @@ export default {
 #add_user{
     font-size: 25px;
     transition: 0.2s;
+    color: #999;
 }
 #add_user:hover{
     color:#fc2a7b;
 }
+#search_user > select{
+    width: 100px;
+    height: 25px;
+    font-size: 12px;
+    color: #999;
+    border: 1.5px solid #ddd;
+}
+#search_user > i{
+    margin-left: 15px;
+    color: #999;
+}
+#search_user > i:hover{
+    color: #fc2a7b;
+}
+
 
 /* about table */
 #table_wrapper{
