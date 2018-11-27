@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1 #{title}
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='user_id') ID:
+      input#user.form-control(type='text', name='user_id', required='true', value=(undefined===user ? '' : user.user_id))
+      label(for='password') password:
+      input#user.form-control(type='text', name='password', required='true', value=(undefined===user ? '' : user.password))
+      label(for='name') Name:
+      input#user.form-control(type='text', name='name', required='true', value=(undefined===user ? '' : user.name))
+      label(for='grade') Grade:
+      input#user.form-control(type='number', name='grade', required='true', value=(undefined===user ? '' : user.grade))
+      label(for='student_id') Student ID:
+      input#user.form-control(type='text', name='student_id', required='true', value=(undefined===user ? '' : user.student_id))
+      label(for='phone') Phone:
+      input#user.form-control(type='text', name='phone', value=(undefined===user ? '' : user.phone))
+      label(for='email') Email:
+      input#user.form-control(type='text', name='email', value=(undefined===user ? '' : user.user_id))
+     
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg

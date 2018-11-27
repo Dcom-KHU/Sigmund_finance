@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  h1 #{title}
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='use_date') Use date:
+      input#finance.form-control(type='date', name='use_date', required='true', value=(undefined===finance ? '' : finance.use_date))
+      label(for='usage') Usage:
+      select#finance.form-control(name='usage', placeholder='-- Select --' required='true')
+        option(value='dues') Dues
+        option(value='dining expenses') Dining Expenses
+        option(value='study subsidy') Study Subsidy
+        option(value='etc') Etc.
+      label(for='detail') Detail:
+      input#finance.form-control(type='text', name='detail', value=(undefined===finance ? '' : finance.detail))
+      label(for='user') User:
+      select#finance.form-control(type='select' placeholder='Select User' name='user' required='true')
+        for user in user_list
+          option(value=user._id) #{user.name}(#{user.student_id})
+      label(for='income') Income:
+      input#finance.form-control(type='number', name='income', required='true', value=(undefined===finance ? '' : finance.income))
+      label(for='outcome') Outcome:
+      input#finance.form-control(type='number', name='outcome', required='true', value=(undefined===finance ? '' : finance.outcome))
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg

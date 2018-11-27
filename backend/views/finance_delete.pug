@@ -1,0 +1,13 @@
+extends layout
+
+block content
+    h1 #{title}: #{finance.order}
+    p show additional finance info
+
+    p Do you really want to delete this Finance?
+
+    form(method='POST' action='')
+        div.form-group
+        input#userid.form-control(type='hidden',name='financeid', required='true', value=finance._id )
+
+        button.btn.btn-primary(type='submit') Delete
