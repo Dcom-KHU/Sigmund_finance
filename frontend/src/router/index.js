@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import home from '@/components/home/home'
-import userList from '@/components/userList/userList'
+import userList from '@/components/list/userList'
+// import userList from '@/components/list/userList'
 
 Vue.use(Router)
 
