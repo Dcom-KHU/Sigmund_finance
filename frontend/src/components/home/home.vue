@@ -9,7 +9,8 @@
                 <div id="mark"></div>
                 <div id="link">
                     <router-link :to="{ name:'userList'}">UserList</router-link>
-                    <router-link :to="{ name:''}">Finance</router-link>
+                    <router-link :to="{ name:'financeList'}">FinanceList</router-link>
+                    <router-link :to="{ name:'debtList'}">DebtList</router-link>
                 </div>
             </div>
         </div>
@@ -88,5 +89,9 @@ export default {
     color:#ffffff;
     font-size: 25px;
     opacity: 0.95;
+    transition: 0.2s;
+}
+#link > *:hover{
+    color:#ff7575;
 }
 </style>
