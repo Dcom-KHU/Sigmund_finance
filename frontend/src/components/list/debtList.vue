@@ -1,6 +1,9 @@
 <template>
     <div id="list_wrapper">
-        <navigator/>
+        <div id="go_home">
+            <router-link :to="{ name:'home'}"><i class="fas fa-chevron-left"></i></router-link>
+        </div>
+        <navigator list="debtList"/>
         <section id="control_section">
             <i id="add_user" class="far fa-plus-square" v-on:click="clickAddUser($event)"></i>
             <div id="search_user">
@@ -276,6 +279,20 @@ export default {
 }
 #list_wrapper > *{
     width:900px;
+}
+#go_home{
+    position: fixed;
+    left: 50px;
+    top: 50vh;
+    width: 25px;
+}
+#go_home i{
+    font-size: 50px;
+    color:#ddd;
+    transition: 0.2s;
+}
+#go_home i:hover{
+    color: #999;
 }
 /* about control */
 #control_section{

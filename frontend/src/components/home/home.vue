@@ -8,9 +8,9 @@
             <div>
                 <div id="mark"></div>
                 <div id="link">
-                    <router-link :to="{ name:'userList'}">UserList</router-link>
-                    <router-link :to="{ name:'financeList'}">FinanceList</router-link>
-                    <router-link :to="{ name:'debtList'}">DebtList</router-link>
+                    <router-link :to="{ name:'userList'}" v-on:click.native="clickRouter('userList')">UserList</router-link>
+                    <router-link :to="{ name:'financeList'}" v-on:click.native="clickRouter('financeList')">FinanceList</router-link>
+                    <router-link :to="{ name:'debtList'}" v-on:click.native="clickRouter('debtList')">DebtList</router-link>
                 </div>
             </div>
         </div>
@@ -28,6 +28,12 @@ export default {
     data(){
         return{
             islogin : false,
+        }
+    },
+    methods:{
+        clickRouter(listName){
+            console.log(listName);
+            eventBus.$emit('clickRouter', listName);
         }
     },
     created(){
