@@ -59,8 +59,9 @@
 </template>
 <script>
 import Vue from 'vue';
-import navigator from "../commons/navigator";
-import { viewEllipsis } from "../commons/function.js"
+import navigator from '../commons/navigator';
+import eventBus from '../event/eventBus';
+import { viewEllipsis } from '../commons/function.js';
 
 export default {
     components:{
@@ -230,7 +231,9 @@ export default {
         checkIsFullForm(){
             for(let index in this.modifyForm){
                 if(this.modifyForm[index] === ""){
-                    alert("모든 폼을 채워주세요.")
+                   eventBus.$emit('alert',{
+                        'message' : '모든 폼을 다 채워주세요.'
+                    })
                     return -1;
                 }
             }
@@ -256,7 +259,9 @@ export default {
                 //f
             }else{
                 if(this.getToolState('add')){
-                    alert("현재 추가 중인 폼이 있습니다.")
+                    eventBus.$emit('alert',{
+                        'message' : '현재 추가중인 폼이 있습니다.'
+                    })
                     return -1;
                 }
             }

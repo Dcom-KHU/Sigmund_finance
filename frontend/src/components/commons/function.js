@@ -12,5 +12,4 @@ function viewEllipsis(){
         }
     });
 }
-
 export { viewEllipsis }
