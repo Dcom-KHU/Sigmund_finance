@@ -38,7 +38,7 @@
                             <td v-else>{{list.usage}}</td>
 
                             <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.detail v-on:keyup.enter="clickTools($event, list)"></td>
-                            <td v-else>{{list.detail}}</td>
+                            <td class="ellipsis" v-else>{{list.detail}}</td>
 
                             <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.user v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.user}}</td>
@@ -68,15 +68,22 @@
 <script>
 import Vue from 'vue';
 import navigator from "../commons/navigator";
+import { viewEllipsis } from "../commons/function.js"
 
 export default {
     components:{
         navigator
     },
+    mounted(){
+        viewEllipsis();
+    },
+    updated(){
+        viewEllipsis();
+    },
     data(){
         return{
             financeLists:[
-               {sid:1, date:"18/11/30", usage:"지그문트 회의비", detail:"생략", user:"채명준", income:"0", outcome:"16,000", total:"950,000"}
+               {sid:1, date:"18/11/30", usage:"지그문트 회의비", detail:"생략ddddddddddddddddddddddddddddddddddddddd", user:"채명준", income:"0", outcome:"16,000", total:"950,000"}
             ],
             clickedElement: null,
             toolState:{

@@ -36,7 +36,7 @@
                             <td v-else>{{list.usage}}</td>
 
                             <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.detail v-on:keyup.enter="clickTools($event, list)"></td>
-                            <td v-else>{{list.detail}}</td>
+                            <td class="ellipsis" v-else>{{list.detail}}</td>
 
                             <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.user v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.user}}</td>
@@ -60,10 +60,17 @@
 <script>
 import Vue from 'vue';
 import navigator from "../commons/navigator";
+import { viewEllipsis } from "../commons/function.js"
 
 export default {
     components:{
         navigator
+    },
+    mounted(){
+        viewEllipsis();
+    },
+    updated(){
+        viewEllipsis();
     },
     data(){
         return{
