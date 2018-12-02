@@ -43,7 +43,11 @@ var FinanceSchema = new Schema({
     total: {
         type: Number,
         required: true
-    }
+    },
+    check: {
+        type: Boolean,
+        required: true,
+    },
 });
 
 // Virtual for finance's url
