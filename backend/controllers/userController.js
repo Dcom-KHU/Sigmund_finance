@@ -9,7 +9,7 @@ exports.user_list = function(req, res, next){
     .exec(function(err, list_user) {
         if(err) { return next(err); }
         // Success
-        res.render('user_list', {title: 'User List', user_list: list_user});
+        res.send({user_list: list_user});
     });
 };
 
@@ -31,12 +31,8 @@ exports.user_detail = function(req, res, next){
             return next(err);
         }
         // Success
-        res.render('user_detail', {title: 'User Detail', user: results.user, user_finances: results.users_finances});
+        res.send({user: results.user, user_finances: results.users_finances});
     });
-};
-
-exports.user_create_get = function(req, res, next){
-    res.render('user_form', {title: 'Create User'});
 };
 
 exports.user_create_post = [
@@ -119,7 +115,7 @@ exports.user_delete_get = function(req, res, next){
             res.redirect('/api/users');
         }
         // Success.
-        res.render('user_delete', {title: 'Delete User', user: results.user, user_finances: results.users_finances});
+        res.send({user: results.user, user_finances: results.users_finances});
     });
 };
 
@@ -137,7 +133,7 @@ exports.user_delete_post = function(req, res, next){
         // Success.
         if(results.users_finances.length > 0){
             //User has books.
-            res.render('user_delete', {title: 'Delete User', user:  results.user, user_finances: results.users_finances});
+            res.send({user:  results.user, user_finances: results.users_finances});
             return;
         }
         else {

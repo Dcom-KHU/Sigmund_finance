@@ -9,7 +9,7 @@ exports.finance_list = function(req, res, next) {
     .exec(function(err, list_finances) {
         if(err) { return next(err); }
         // SUCCESS
-        res.render('finance_list', {title: 'Finances list', finances_list: list_finances})
+        res.render({finances_list: list_finances})
     });
 };
 
@@ -22,7 +22,7 @@ exports.finance_create_get = function(req, res, next) {
     .exec(function(err, users) {
         if(err) { return next(err); }
         // Success
-        res.render('finance_form', {title: 'Create Finance', user_list: users});
+        res.send({user_list: users});
     });
 };
 
@@ -78,6 +78,7 @@ exports.finance_create_post = [
                     income: req.body.income,
                     outcome: req.body.outcome,
                     total: last_total,
+                    check: true,
                 });
 
                 finance.save(function(err) {
@@ -99,7 +100,7 @@ exports.finance_delete_get = function(req, res, next) {
             res.redirect('/api/finances');
         }
         //Success
-        res.render('finance_delete', {title: 'Delete Finance', finance: results});
+        res.send({finance: results});
     });
 };
 

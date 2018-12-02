@@ -12,7 +12,6 @@ router.get('/', function(req, res){
 
 // USER 
 // create
-router.get('/users/create', user_controller.user_create_get);
 router.post('/users/create', user_controller.user_create_post);
 
 // delete
