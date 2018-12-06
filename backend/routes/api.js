@@ -12,9 +12,11 @@ router.get('/', function(req, res){
 
 // USER 
 // create
+router.put('/users', user_controller.user_create);
 router.post('/users/create', user_controller.user_create_post);
 
 // delete
+router.delete('/users/:id', user_controller.user_delete);
 router.get('/users/:id/delete', user_controller.user_delete_get);
 router.post('/users/:id/delete', user_controller.user_delete_post);
 
