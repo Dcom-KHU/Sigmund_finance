@@ -216,17 +216,15 @@ exports.user_delete_post = function(req, res, next){
 };
 
 exports.user_delete = function(req, res, next){
-
     async.parallel({
         user: function(callback) {
-            User.findById(req.params.userid).exec(callback);
+            User.findById(req.params.id).exec(callback);
         },
         users_finances: function(callback) {
-            Finance.find({'user': req.params.userid}).exec(callback);
+            Finance.find({'user': req.params.id}).exec(callback);
         },
     }, function(err, results) {
         if(err) { return res.status(404).send(err); }
-        console.log(results)
         // Success.
         if(results.users_finances.length > 0){
             //User has finances.
@@ -234,17 +232,14 @@ exports.user_delete = function(req, res, next){
             return;
         }
         else {
-            var id = req.body.userid
-            User.findByIdAndRemove(req.body.userid, function deleteUser(err) {
+            User.findByIdAndRemove(req.params.id, function deleteUser(err) {
                 if(err) { return res.status(404).send(err); }
                 // Success
-                res.send({"message": "User " + id + "successfuly deleted."});
+                res.send({"message": "User " + req.params.id + " successfuly deleted."});
             });
         }
     });
-
 };
-
 
 exports.user_update_get = function(req, res, next){
     res.send('NOT IMPLEMENTED: user update get');
@@ -253,3 +248,57 @@ exports.user_update_get = function(req, res, next){
 exports.user_update_post = function(req, res, next){
     res.send('NOT IMPLEMENTED: user update post');
 };
+
+exports.user_update = [
+    // Validate
+    body('user_id', 'User ID requried.').isLength({min: 3}).trim(),
+    body('password', 'Password length should have more then 10').isLength({min: 10}).trim(),
+    body('name', 'Name required.').isLength({min: 1}).trim(),
+    body('grade', 'Grade value is must 1 ~ 6').isLength({min: 1, max: 1}).isDecimal().trim(),
+    body('student_id', 'Student ID required.').isLength({min: 10, max: 10}).trim(),
+    body('phone', 'Phone Number should have length 10 to 12').isLength({min: 10, max: 12}).trim(),
+    body('email', 'Email is not currect').isEmail().trim(),
+
+    // Sanitize
+    sanitizeBody('user_id').trim().escape(),
+    sanitizeBody('name').trim().escape(),
+    sanitizeBody('grade').trim().escape(),
+    sanitizeBody('student_id').trim().escape(),
+    sanitizeBody('phone').trim().escape(),
+    sanitizeBody('email').trim().escape(),
+
+    (req, res, next) => {
+        // Errors
+        const errors = validationResult(req);
+
+        // Create User object
+        var user = new User({
+            user_id: req.body.user_id,
+            password: req.body.password,
+            name: req.body.name,
+            grade: req.body.grade,
+            student_id: req.body.student_id,
+            //status: req.body.status,
+            //position: req.body.position,
+            phone: req.body.phone,
+            email: req.body.email,
+            reg_date: Date.now(),
+            _id: req.params.id
+        });
+        
+        if(!errors.isEmpty()) {
+            // error
+            res.status(400).send({user: user, errors: errors.array()});
+            return;
+        }
+        else {
+            // Data from form is valid.
+            // Check if User with same student id not exists.
+            User.findByIdAndUpdate(req.params.id, user, {}, function(err, theuser) {
+                if (err) { return res.status(400).send(err); }
+                // Success
+                return res.send({"message": "User successfuly updated."});
+            })
+        }
+    }
+];

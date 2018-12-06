@@ -23,6 +23,7 @@ router.post('/users/:id/delete', user_controller.user_delete_post);
 // update
 router.get('/users/:id/update', user_controller.user_update_get);
 router.post('/users/:id/update', user_controller.user_update_post);
+router.put('/users/:id', user_controller.user_update);
 
 // detail
 router.get('/users/:id', user_controller.user_detail);
