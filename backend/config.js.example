@@ -1,0 +1,3 @@
+module.exports = Object.freeze({
+    MONGO_ENDPOINT: 'mongodb://USER_NAME:PASSWORD@DOMAIN:PORT/DATABASE_NAME'
+})
