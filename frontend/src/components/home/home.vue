@@ -17,9 +17,16 @@
     </div>
 </template>
 <script>
-import login from "./login"
+//Vue
 import eventBus from '../event/eventBus'
 
+//3rd Party
+
+//User
+import { _setSession, _getSession } from '../commons/function'
+
+//Component
+import login from "./login"
 
 export default {
     components:{
@@ -37,6 +44,10 @@ export default {
         }
     },
     created(){
+        if(_getSession('session')){
+            this.islogin = true; 
+        }
+
         eventBus.$on("login", (data)=>{
             this.islogin = data;
         })

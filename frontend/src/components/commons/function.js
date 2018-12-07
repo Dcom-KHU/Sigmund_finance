@@ -15,6 +15,17 @@ function viewEllipsis(){
     });
 }
 
+//Session
+function _setSession(key, value){
+    console.log(key, value);
+    localStorage.setItem(key, value);
+}
+
+function _getSession(key){
+    return localStorage.getItem(key);
+}
+
+//HTTP Client
 async function _get(detail){
     let baseURL = `http://localhost:3000/api/${detail}`;
 
@@ -46,4 +57,4 @@ async function _delete(detail){
     return result;
 }
 
-export { viewEllipsis, _get, _put, _delete }
+export { viewEllipsis, _get, _put, _delete, _setSession, _getSession }

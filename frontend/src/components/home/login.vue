@@ -22,7 +22,13 @@
     </div>
 </template>
 <script>
+//Vue
 import eventBus from '../event/eventBus'
+
+//3rd Party
+
+//User
+import { _setSession, _getSession } from '../commons/function'
 
 export default {
     data(){
@@ -47,6 +53,7 @@ export default {
                     this.isLoginValid = true;
                     
                     setTimeout(() => {
+                        _setSession('session', true);
                         eventBus.$emit("login", this.isLoginValid);
                     }, 500);
                 }
