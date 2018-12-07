@@ -1,17 +1,20 @@
 <template>
     <div id="list_wrapper">
-        <navigator/>
+        <div id="go_home">
+            <router-link :to="{ name:'home'}"><i class="fas fa-chevron-left"></i></router-link>
+        </div>
+        <navigator list="userList"/>
         <section id="control_section">
             <i id="add_user" class="far fa-plus-square" v-on:click="clickAddUser($event)"></i>
             <div id="search_user">
                 <select v-model="selectValues[0].form">
-                     <option v-for="option in searchOptions[0].options" :key="option.id">{{option}}</option>
+                    <option v-for="option in searchOptions[0].options" :key="option.id">{{option}}</option>
                 </select>
                 <select v-model="selectValues[1].form">
                     <option v-for="option in searchOptions[1].options" :key="option.id">{{option}}</option>
                 </select>
                 <select v-model="selectValues[2].form">
-                     <option v-for="option in searchOptions[2].options" :key="option.id">{{option}}</option>
+                    <option v-for="option in searchOptions[2].options" :key="option.id">{{option}}</option>
                 </select>
                 <i class="fas fa-search" v-on:click="clickSearchUser($event)"></i>
             </div>
@@ -69,7 +72,8 @@
 </template>
 <script>
 import Vue from 'vue';
-import navigator from "../commons/navigator";
+import eventBus from '../event/eventBus';
+import navigator from '../commons/navigator';
 
 export default {
     components:{
@@ -255,7 +259,9 @@ export default {
         checkIsFullForm(){
             for(let index in this.modifyForm){
                 if(this.modifyForm[index] === ""){
-                    alert("모든 폼을 채워주세요.")
+                    eventBus.$emit('alert',{
+                        'message' : '모든 폼을 채워주세요.'
+                    })
                     return -1;
                 }
             }
@@ -281,7 +287,9 @@ export default {
                 //f
             }else{
                 if(this.getToolState('add')){
-                    alert("현재 추가 중인 폼이 있습니다.")
+                    eventBus.$emit('alert',{
+                        'message' : '현재 추가중인 폼이 있습니다.'
+                    })
                     return -1;
                 }
             }
@@ -311,6 +319,20 @@ export default {
 }
 #list_wrapper > *{
     width:850px;
+}
+#go_home{
+    position: fixed;
+    left: 50px;
+    top: 50vh;
+    width: 25px;
+}
+#go_home i{
+    font-size: 50px;
+    color:#ddd;
+    transition: 0.2s;
+}
+#go_home i:hover{
+    color: #999;
 }
 /* about control */
 #control_section{
@@ -345,6 +367,9 @@ export default {
 
 /* about table */
 #table_wrapper{
+    display: flex;
+    justify-content: center;
+
     padding: 10px 5px;
     border: 1px solid rgba(0,0,0,.12);
     box-shadow: 0 1px 3px 0 rgba(0,0,0,.24), 0 1px 2px 0 rgba(0,0,0,.24);
