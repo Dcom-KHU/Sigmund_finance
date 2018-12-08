@@ -5,10 +5,8 @@ function isEllipsisActive(element){
 }
 
 function viewEllipsis(){
-    console.log('viewEllipsis');
     Array.from(document.querySelectorAll('.ellipsis'))
     .forEach(element => {
-        console.log(element);
         if (isEllipsisActive(element)) {
             element.title = element.innerText;
         }
@@ -39,9 +37,10 @@ async function _get(detail){
 async function _put(detail, body){
     let baseURL = `http://localhost:3000/api/${detail}`;
 
-    let result = await axios.put(baseURL, {
+    let data = JSON.stringify(body);
+
+    let result = await axios.put(baseURL, data, {
         headers:{'Content-Type': 'application/json'},
-        body
     }) 
 
     return result;
