@@ -35,26 +35,26 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="list in userlists" :key="list.sid" v-on:click="visibleTools(list.sid)" :ref="'tr'+list.sid">
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.sid v-on:keyup.enter="clickTools($event, list)"></td>
-                            <td v-else>{{list.sid}}</td>
+                        <tr v-for="list in userlists" :key="list._id" v-on:click="visibleTools(list.student_id)" :ref="'tr'+list.student_id">
+                            <td v-if="toolState.state.modify && list.student_id === toolState.id"><input v-model=modifyForm.student_id v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-else>{{list.student_id}}</td>
                             
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.name v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-if="toolState.state.modify && list.student_id === toolState.id"><input v-model=modifyForm.name v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.name}}</td>
                         
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.grade v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-if="toolState.state.modify && list.student_id === toolState.id"><input v-model=modifyForm.grade v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.grade}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.status v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-if="toolState.state.modify && list.student_id === toolState.id"><input v-model=modifyForm.status v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.status}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.position v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-if="toolState.state.modify && list.student_id === toolState.id"><input v-model=modifyForm.position v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else class="tier_td"><span class="tier">{{list.position}}</span></td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.phone v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-if="toolState.state.modify && list.student_id === toolState.id"><input v-model=modifyForm.phone v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.phone}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.email v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-if="toolState.state.modify && list.student_id === toolState.id"><input v-model=modifyForm.email v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.email}}</td>
 
                             <td class="last_td" @click.stop="clickTools($event, list)">
@@ -71,9 +71,15 @@
     </div>
 </template>
 <script>
+//Vue
 import Vue from 'vue';
 import eventBus from '../event/eventBus';
+
+//3rd party
+
+//Vue
 import navigator from '../commons/navigator';
+import { _get, _put, _delete } from '../commons/function';
 
 export default {
     components:{
@@ -82,16 +88,7 @@ export default {
     data(){
         return{
             userlists:[
-               {sid:2014104155, name:"채명준", grade:3, status:"재학", email:"cmj9597@naver.com", phone:"01091992137", position:"normal"},
-               {sid:2014104156, name:"채명준", grade:3, status:"재학", email:"cmj9597@naver.com", phone:"01091992137", position:"normal"},
-               {sid:2014104157, name:"채명준", grade:3, status:"재학", email:"cmj9597@naver.com", phone:"01091992137", position:"normal"},
-               {sid:2014104158, name:"채명준", grade:3, status:"재학", email:"cmj9597@naver.com", phone:"01091992137", position:"normal"},
-               {sid:2014104159, name:"채명준", grade:3, status:"재학", email:"cmj9597@naver.com", phone:"01091992137", position:"normal"},
-               {sid:2014104150, name:"채명준", grade:3, status:"재학", email:"cmj9597@naver.com", phone:"01091992137", position:"normal"},
-               {sid:2014104151, name:"채명준", grade:3, status:"재학", email:"cmj9597@naver.com", phone:"01091992137", position:"normal"},
-               {sid:2014104152, name:"채명준", grade:3, status:"재학", email:"cmj9597@naver.com", phone:"01091992137", position:"normal"},
-               {sid:2014104153, name:"채명준", grade:3, status:"재학", email:"cmj9597@naver.com", phone:"01091992137", position:"normal"},
-               {sid:2014104154, name:"채명준", grade:3, status:"재학", email:"cmj9597@naver.com", phone:"01091992137", position:"normal"},
+               //{student_id:2014104155, name:"채명준", grade:3, status:"재학", email:"cmj9597@naver.com", phone:"01091992137", position:"normal"},
             ],
             clickedElement: null,
             toolState:{
@@ -104,7 +101,7 @@ export default {
                 }
             },
             modifyForm:{
-                sid : "",
+                student_id : "",
                 name : "",
                 grade: "",
                 status: "",
@@ -122,8 +119,14 @@ export default {
                 {options:['재학여부','재학','휴학','군휴학','졸업','휴면',]},
                 {options:['직책','일반회원', '회장', '부회장', '총무', '교육부장', '청소부장']},
             ],
-            test: 'test'
         };
+    },
+    created(){
+        _get(`users`)
+        .then((result)=>{
+            this.userlists = result.data.user_list
+        })
+        .catch((error)=>{console.log(error)})
     },
     methods:{
         clickAddUser(event){
@@ -134,7 +137,7 @@ export default {
 
             this.$set(this.userlists, this.userlists.length, 
             {
-                sid:tempId,
+                student_id:tempId,
                 name:"", 
                 grade:"", 
                 status:"", 
@@ -161,35 +164,14 @@ export default {
             for(let value of this.selectValues){
                 console.log(value.form);
             }
-                
-            //To-do 서버 연동
-            /*let baseURI = ;
-            
-            axios.get(baseURI, {
-                params:{
-                    keyword: data
-                },  
-                headers:{
-                    'Content-Type': 'application/json',
-                    'x-api-key': confidential.aws_apikey
-                }
-            })
-            .then((result) => {
-                console.log(result);
-                eventBus.$emit('getWord', result.data);
-            })
-            .catch((error) => {
-                console.log("fail")
-                console.log(error)
-            })*/
         },
-        visibleTools(list_sid){
-            if(list_sid === this.toolState.id)
+        visibleTools(list_student_id){
+            if(list_student_id === this.toolState.id)
                 return;
                 
             //이전 상태 삭제
             if(this.resetToolState() === -1){return;}
-            this.updateToolState("whole", list_sid);
+            this.updateToolState("whole", list_student_id);
             
             if(this.clickedElement)
                 this.clickedElement.classList.remove('visible');
@@ -233,17 +215,31 @@ export default {
                 //삭제 확인
                 if(className.search("true") !== -1){
                     for(let index in this.userlists){
-                        if(this.userlists[index].sid === list.sid){
-                            let refIndex = `tr${list.sid}`;
+                        if(this.userlists[index].student_id === list.student_id){
+                            let refIndex = `tr${list.student_id}`;
                             let refEle = this.$refs[refIndex][0];
                             let refEleChild = refEle.children;
                    
-                            for(let i = 0; i < refEleChild.length ; i++){
-                                refEleChild[i].classList.add('delete');
+                            let animation = (state) => {
+                                for(let i = 0; i < refEleChild.length ; i++){
+                                    if(state === 'add')
+                                        refEleChild[i].classList.add('delete');
+                                    else if(state === 'remove')
+                                        refEleChild[i].classList.remove('delete');
+                                }
                             }
 
+                            animation('add');
+
                             setTimeout(() => {
-                                this.$delete(this.userlists, index);
+                                _delete(`users/${this.userlists[index]._id}`)
+                                .then((result)=>{this.$delete(this.userlists, index);})
+                                .catch((error)=>{
+                                    animation('remove');
+                                    eventBus.$emit('alert',{
+                                        'message' : '삭제할 수 없습니다.'
+                                    })
+                                })
                             }, 500);
                             
                             break;
