@@ -77,7 +77,7 @@ import eventBus from '../event/eventBus';
 
 //3rd party
 
-//Vue
+//User
 import navigator from '../commons/navigator';
 import { _get, _put, _delete } from '../commons/function';
 

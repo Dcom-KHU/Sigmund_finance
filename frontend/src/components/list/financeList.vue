@@ -27,29 +27,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="list in financeLists" :key="list.sid" v-on:click="visibleTools(list.sid)" :ref="'tr'+list.sid">
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.sid v-on:keyup.enter="clickTools($event, list)"></td>
-                            <td v-else>{{list.sid}}</td>
+                        <tr v-for="list in financeLists" :key="list._id" v-on:click="visibleTools(list.order)" :ref="'tr'+list.order">
+                            <td v-if="toolState.state.modify && list.order === toolState.id"><input v-model=modifyForm.order v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-else>{{list.order}}</td>
                             
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.date v-on:keyup.enter="clickTools($event, list)"></td>
-                            <td v-else>{{list.date}}</td>
+                            <td v-if="toolState.state.modify && list.order === toolState.id"><input v-model=modifyForm.use_date v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-else>{{list.use_date}}</td>
                         
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.usage v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-if="toolState.state.modify && list.order === toolState.id"><input v-model=modifyForm.usage v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.usage}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.detail v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-if="toolState.state.modify && list.order === toolState.id"><input v-model=modifyForm.detail v-on:keyup.enter="clickTools($event, list)"></td>
                             <td class="ellipsis" v-else>{{list.detail}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.user v-on:keyup.enter="clickTools($event, list)"></td>
-                            <td v-else>{{list.user}}</td>
+                            <td v-if="toolState.state.modify && list.order === toolState.id"><input v-model=modifyForm.user v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-else>{{list.user.name}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.income v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-if="toolState.state.modify && list.order === toolState.id"><input v-model=modifyForm.income v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.income}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.outcome v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-if="toolState.state.modify && list.order === toolState.id"><input v-model=modifyForm.outcome v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.outcome}}</td>
 
-                            <td v-if="toolState.state.modify && list.sid === toolState.id"><input v-model=modifyForm.total v-on:keyup.enter="clickTools($event, list)"></td>
+                            <td v-if="toolState.state.modify && list.order === toolState.id"><input v-model=modifyForm.total v-on:keyup.enter="clickTools($event, list)"></td>
                             <td v-else>{{list.total}}</td>
 
                             <td class="last_td" @click.stop="clickTools($event, list)">
@@ -66,25 +66,25 @@
     </div>
 </template>
 <script>
+//Vue
 import Vue from 'vue';
-import navigator from '../commons/navigator';
 import eventBus from '../event/eventBus';
-import { viewEllipsis } from '../commons/function.js';
+
+//3rd party
+
+//User
+import navigator from '../commons/navigator';
+import { viewEllipsis, _get, _put, _delete } from '../commons/function.js';
+
 
 export default {
     components:{
         navigator
     },
-    mounted(){
-        viewEllipsis();
-    },
-    updated(){
-        viewEllipsis();
-    },
     data(){
         return{
             financeLists:[
-               {sid:1, date:"18/11/30", usage:"지그문트 회의비", detail:"생략ddddddddddddddddddddddddddddddddddddddd", user:"채명준", income:"0", outcome:"16,000", total:"950,000"}
+                //{order:1, use_date:"18/11/30", usage:"지그문트 회의비", detail:"생략ddddddddddddddddddddddddddddddddddddddd", user:"채명준", income:"0", outcome:"16,000", total:"950,000"}
             ],
             clickedElement: null,
             toolState:{
@@ -97,8 +97,8 @@ export default {
                 }
             },
             modifyForm:{
-                sid : "",
-                date : "",
+                order : "",
+                use_date : "",
                 usage: "",
                 detail: "",
                 user: "",
@@ -107,6 +107,19 @@ export default {
                 total: ""
             }
         };
+    },
+    mounted(){
+        viewEllipsis();
+    },
+    updated(){
+        viewEllipsis();
+    },
+    created(){
+        _get(`finances`)
+        .then((result)=>{
+            this.financeLists = result.data.finances_list;
+        })
+        .catch((error)=>{console.log(error)})
     },
     methods:{
         clickAddUser(event){
@@ -117,35 +130,42 @@ export default {
 
             this.$set(this.financeLists, this.financeLists.length, 
             {
-                sid:tempId,
-                date:"", 
+                order:tempId,
+                use_date:"", 
                 usage:"", 
                 detail:"", 
-                user:"", 
+                user:{
+                    _id:""
+                }, 
                 income: "",
                 outcome: "",
                 total: ""
             });
-
+        
             this.visibleTools(tempId);
             this.updateToolState("whole",tempId);
             this.updateToolState("modify");
             this.updateToolState("add");
-
+            
+            this.modifyForm.order = "automation";
+            this.modifyForm.use_date = "automation";
+            this.modifyForm.user = "automation";
+            this.modifyForm.total = "automation";
+    
             //추가된 list를 찾아서 버튼 활성화
             this.$nextTick(()=>{
                 this.$refs[refIndex][0].lastChild.classList.add('visible');
-
+                console.log(this.modifyForm);
                 //포커싱
             })
         },
-        visibleTools(list_sid){
-            if(list_sid === this.toolState.id)
+        visibleTools(list_order){
+            if(list_order === this.toolState.id)
                 return;
                 
             //이전 상태 삭제
             if(this.resetToolState() === -1){return;}
-            this.updateToolState("whole", list_sid);
+            this.updateToolState("whole", list_order);
             
             if(this.clickedElement)
                 this.clickedElement.classList.remove('visible');
@@ -175,9 +195,30 @@ export default {
                         this.updateToolState("modify");
                         return;
                     }
-                    for(status in this.modifyForm){
-                        list[status] = this.modifyForm[status];
-                    }
+                    
+                    _put(list._id ? `finances/${list._id}` : `finances`
+                    ,{
+                        usage : this.modifyForm['usage'],
+                        detail : this.modifyForm['detail'],
+                        user : {
+                            "_id":"5bf0c8203feb4a0fe4f32141",
+                        },
+                        income : this.modifyForm['income'],
+                        outcome : this.modifyForm['outcome']
+                    })
+                    .then((result)=>{
+                        _get(`finances`)
+                        .then((result)=>{
+                            this.financeLists = result.data.finances_list;
+                        })
+                        .catch((error)=>{console.log(error)})
+                    })
+                    .catch((error)=>{
+                        eventBus.$emit('alert',{
+                        'message' : '추가할 수 없습니다.'
+                        }) 
+                    })
+
                     if(this.resetToolState("f") === -1){return;}
                 }
             }
@@ -189,19 +230,33 @@ export default {
                 //삭제 확인
                 if(className.search("true") !== -1){
                     for(let index in this.financeLists){
-                        if(this.financeLists[index].sid === list.sid){
-                            let refIndex = `tr${list.sid}`;
+                        if(this.financeLists[index].order === list.order){
+                            let refIndex = `tr${list.order}`;
                             let refEle = this.$refs[refIndex][0];
                             let refEleChild = refEle.children;
                    
-                            for(let i = 0; i < refEleChild.length ; i++){
-                                refEleChild[i].classList.add('delete');
+                            let animation = (state) => {
+                                for(let i = 0; i < refEleChild.length ; i++){
+                                    if(state === 'add')
+                                        refEleChild[i].classList.add('delete');
+                                    else if(state === 'remove')
+                                        refEleChild[i].classList.remove('delete');
+                                }
                             }
 
+                            animation('add');
+
                             setTimeout(() => {
-                                this.$delete(this.financeLists, index);
+                                _delete(`finances/${this.financeLists[index]._id}`)
+                                .then((result)=>{this.$delete(this.financeLists, index);})
+                                .catch((error)=>{
+                                    animation('remove');
+                                    eventBus.$emit('alert',{
+                                        'message' : '삭제할 수 없습니다.'
+                                    })
+                                })
                             }, 500);
-                            
+
                             break;
                         } 
                     }
