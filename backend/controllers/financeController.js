@@ -55,7 +55,7 @@ exports.finance_create = [
         
         if(!errors.isEmpty()) {
             // error
-            res.sataus(404).send({user: user, errors: errors.array()});
+            res.status(404).send({user: user, errors: errors.array()});
             return;
         }
         else {
