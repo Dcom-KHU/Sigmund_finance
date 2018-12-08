@@ -91,7 +91,7 @@ exports.user_create = [
                  }
                  else {
                      user.save(function (err) {
-                       if (err) { return res.status(400).send(err) }
+                       if (err) { return res.status(400).send(err); }
                        // Genre saved. Redirect to genre detail page.
                        res.status(200).send({"message": "User successfuly created."});
                      });
@@ -103,6 +103,7 @@ exports.user_create = [
     }
 ];
 
+// @deprecated
 exports.user_create_post = [
     // Validate
     body('user_id', 'User ID requried.').isLength({min: 5}).trim(),
@@ -141,7 +142,7 @@ exports.user_create_post = [
         
         if(!errors.isEmpty()) {
             // error
-            res.status(400).send('user_form', {user: user, errors: errors.array()});
+            res.status(400).send({user: user, errors: errors.array()});
             return;
         }
         else {
@@ -169,6 +170,7 @@ exports.user_create_post = [
     }
 ];
 
+// @deprecated
 exports.user_delete_get = function(req, res, next){
     async.parallel({
         user: function(callback) {
@@ -187,6 +189,7 @@ exports.user_delete_get = function(req, res, next){
     });
 };
 
+// @deprecated
 exports.user_delete_post = function(req, res, next){
 
     async.parallel({
@@ -241,10 +244,12 @@ exports.user_delete = function(req, res, next){
     });
 };
 
+// @deprecated
 exports.user_update_get = function(req, res, next){
     res.send('NOT IMPLEMENTED: user update get');
 };
 
+// @deprecated
 exports.user_update_post = function(req, res, next){
     res.send('NOT IMPLEMENTED: user update post');
 };
