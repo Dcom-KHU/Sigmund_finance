@@ -28,7 +28,7 @@ import eventBus from '../event/eventBus'
 //3rd Party
 
 //User
-import { _setSession, _getSession } from '../commons/function'
+import { _setSession, _getSession, _get } from '../commons/function'
 
 export default {
     data(){
@@ -51,11 +51,13 @@ export default {
             if(this.userInfo.name === this.typedInfo.name){
                 if(this.userInfo.password === this.typedInfo.password){
                     this.isLoginValid = true;
-                    
-                    setTimeout(() => {
-                        _setSession('session', true);
+
+                    _get(`users`)
+                    .then((result)=>{
+                        _setSession('session', result.data.user_list[0]._id);
                         eventBus.$emit("login", this.isLoginValid);
-                    }, 500);
+                    })
+                    .catch((error)=>{console.log(error)})
                 }
             }
             //로그인 실패 시
