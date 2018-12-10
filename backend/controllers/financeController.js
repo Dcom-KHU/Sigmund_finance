@@ -22,16 +22,6 @@ exports.finance_detail = function(req, res, next) {
     })
 };
 
-// @deprecated
-exports.finance_create_get = function(req, res, next) {
-    User.find({}, 'name student_id')
-    .exec(function(err, users) {
-        if(err) { return next(err); }
-        // Success
-        res.send({user_list: users});
-    });
-};
-
 exports.finance_create = [
     // Validate
     body('use_date', 'Use Date requried.').trim(),
@@ -98,37 +88,6 @@ exports.finance_create = [
     }
 ];
 
-// @deprecated
-exports.finance_delete_get = function(req, res, next) {
-    Finance.findById(req.params.id)
-    .exec(function(err, results){
-        if(err) { return next(err); }
-        if(results == null) {
-            res.redirect('/api/finances');
-        }
-        //Success
-        res.send({finance: results});
-    });
-};
-
-
-exports.finance_delete_post = function(req, res, next) {
-    Finance.findById(req.params.id)
-    .exec(function(err, results){
-        if(err) { return next(err);}
-        if(results==null){
-            res.redirect('/api/finances');
-        }
-        else{
-            Finance.findByIdAndRemove(req.body.financeid, function deleteFinance(err) {
-                if(err) {return next(err);}
-                // Success
-                res.redirect('/api/finances');
-            })
-        }
-    });
-};
-
 exports.finance_delete = function(req, res, next) {
     Finance.findById(req.params.id)
     .exec(function(err, results){
@@ -144,14 +103,6 @@ exports.finance_delete = function(req, res, next) {
             })
         }
     });
-};
-
-exports.finance_update_get = function(req, res, next) {
-    res.send('NOT IMPLEMENTED: finance update get');
-};
-
-exports.finance_update_post = function(req, res, next) {
-    res.send('NOT IMPLEMENTED: finance update post');
 };
 
 exports.finance_update = [
