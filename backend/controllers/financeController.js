@@ -22,16 +22,6 @@ exports.finance_detail = function(req, res, next) {
     })
 };
 
-// @deprecated
-exports.finance_create_get = function(req, res, next) {
-    User.find({}, 'name student_id')
-    .exec(function(err, users) {
-        if(err) { return next(err); }
-        // Success
-        res.send({user_list: users});
-    });
-};
-
 exports.finance_create = [
     // Validate
     body('use_date', 'Use Date requried.').trim(),
@@ -55,7 +45,7 @@ exports.finance_create = [
         
         if(!errors.isEmpty()) {
             // error
-            res.sataus(404).send({user: user, errors: errors.array()});
+            res.status(404).send({user: user, errors: errors.array()});
             return;
         }
         else {
@@ -98,37 +88,6 @@ exports.finance_create = [
     }
 ];
 
-// @deprecated
-exports.finance_delete_get = function(req, res, next) {
-    Finance.findById(req.params.id)
-    .exec(function(err, results){
-        if(err) { return next(err); }
-        if(results == null) {
-            res.redirect('/api/finances');
-        }
-        //Success
-        res.send({finance: results});
-    });
-};
-
-
-exports.finance_delete_post = function(req, res, next) {
-    Finance.findById(req.params.id)
-    .exec(function(err, results){
-        if(err) { return next(err);}
-        if(results==null){
-            res.redirect('/api/finances');
-        }
-        else{
-            Finance.findByIdAndRemove(req.body.financeid, function deleteFinance(err) {
-                if(err) {return next(err);}
-                // Success
-                res.redirect('/api/finances');
-            })
-        }
-    });
-};
-
 exports.finance_delete = function(req, res, next) {
     Finance.findById(req.params.id)
     .exec(function(err, results){
@@ -140,18 +99,11 @@ exports.finance_delete = function(req, res, next) {
             Finance.findByIdAndRemove(req.params.id, function deleteFinance(err) {
                 if(err) {return res.status(404).send(err);}
                 // Success
+                recalculate_finances(req, res, next);
                 res.send({"message": "Finance " + req.params.id + " successfuly deleted."});
             })
         }
     });
-};
-
-exports.finance_update_get = function(req, res, next) {
-    res.send('NOT IMPLEMENTED: finance update get');
-};
-
-exports.finance_update_post = function(req, res, next) {
-    res.send('NOT IMPLEMENTED: finance update post');
 };
 
 exports.finance_update = [
@@ -177,7 +129,7 @@ exports.finance_update = [
         
         if(!errors.isEmpty()) {
             // error
-            res.sataus(404).send({user: user, errors: errors.array()});
+            res.status(404).send({errors: errors.array()});
             return;
         }
         else {
@@ -186,7 +138,7 @@ exports.finance_update = [
             var last_total = 0;
             var last_order = 0;
 
-            Finance.findOne().sort({'order': -1}).exec( function(err, recent_finance){
+            Finance.findOne().sort({'use_date': 1}).exec( function(err, recent_finance){
                 if(err) { return res.status(400).send(err); }
                 // if first 
                 if(recent_finance!=null) {
@@ -213,6 +165,8 @@ exports.finance_update = [
                 Finance.findByIdAndUpdate(req.params.id, finance, {}, function(err, thefinane) {
                     if (err) { return res.status(400).send(err); }
                     // SUCCESS
+                    // Recalcuate
+                    recalculate_finances(req, res, next);
                     return res.send({"message": "Finance successfuly updated."});
                 })
                 
@@ -220,3 +174,57 @@ exports.finance_update = [
         }
     }
 ];
+
+// reclaculate total
+// TODO ENHANCEMETN : set start point
+function recalculate_finances(req, res, next) {
+    Finance.find()
+    .sort({'use_date': 1})
+    .exec( function(err, finances) {
+        if (err) { return res.status(500).send(err); }
+        // SUCCESS
+
+        prev_finance = null;
+        total = 0;
+        // loop all finances
+        finances.forEach(function(current) {
+            // first finance to store
+            if (prev_finance == null){
+                prev_finance = current;
+                // calc only current total
+                total = prev_finance.income - prev_finance.outcome;
+            }
+            // other's total
+            else {
+                total = prev_finance.total + current.income - current.outcome;
+            }
+
+            // if total is diffrent update
+            if (current.total != total) {
+
+                // Create Finance object
+                var finance = new Finance({
+                    order: prev_finance.order+1,
+                    use_date: current.use_date,
+                    usage: current.usage,
+                    detail: current.detail,
+                    user: current.user,
+                    income: current.income,
+                    outcome: current.outcome,
+                    total: total,
+                    check: current.check,
+                    _id: current.id
+                });
+
+                // update changed total
+                Finance.findByIdAndUpdate(current.id, finance, {}, function(err, thefinane) {
+                    if (err) { return res.status(400).send(err); }
+                    // Success
+                });
+            }
+            // prev update
+            prev_finance = current;
+        });
+
+    });
+}
