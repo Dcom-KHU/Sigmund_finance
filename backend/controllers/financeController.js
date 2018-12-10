@@ -99,6 +99,7 @@ exports.finance_delete = function(req, res, next) {
             Finance.findByIdAndRemove(req.params.id, function deleteFinance(err) {
                 if(err) {return res.status(404).send(err);}
                 // Success
+                recalculate_finances(req, res, next);
                 res.send({"message": "Finance " + req.params.id + " successfuly deleted."});
             })
         }
@@ -128,7 +129,7 @@ exports.finance_update = [
         
         if(!errors.isEmpty()) {
             // error
-            res.sataus(404).send({user: user, errors: errors.array()});
+            res.status(404).send({errors: errors.array()});
             return;
         }
         else {
@@ -137,7 +138,7 @@ exports.finance_update = [
             var last_total = 0;
             var last_order = 0;
 
-            Finance.findOne().sort({'order': -1}).exec( function(err, recent_finance){
+            Finance.findOne().sort({'use_date': 1}).exec( function(err, recent_finance){
                 if(err) { return res.status(400).send(err); }
                 // if first 
                 if(recent_finance!=null) {
@@ -164,6 +165,8 @@ exports.finance_update = [
                 Finance.findByIdAndUpdate(req.params.id, finance, {}, function(err, thefinane) {
                     if (err) { return res.status(400).send(err); }
                     // SUCCESS
+                    // Recalcuate
+                    recalculate_finances(req, res, next);
                     return res.send({"message": "Finance successfuly updated."});
                 })
                 
@@ -174,9 +177,9 @@ exports.finance_update = [
 
 // reclaculate total
 // TODO ENHANCEMETN : set start point
-recalculate_total = function(req, res, next) {
+function recalculate_finances(req, res, next) {
     Finance.find()
-    .sort({'use_date': -1})
+    .sort({'use_date': 1})
     .exec( function(err, finances) {
         if (err) { return res.status(500).send(err); }
         // SUCCESS
@@ -189,11 +192,11 @@ recalculate_total = function(req, res, next) {
             if (prev_finance == null){
                 prev_finance = current;
                 // calc only current total
-                total = prev_finance.income - prev_finance.outcome
+                total = prev_finance.income - prev_finance.outcome;
             }
             // other's total
             else {
-                total = prev_finance.total + current.income - current.outcome
+                total = prev_finance.total + current.income - current.outcome;
             }
 
             // if total is diffrent update
@@ -214,13 +217,13 @@ recalculate_total = function(req, res, next) {
                 });
 
                 // update changed total
-                User.findByIdAndUpdate(req.params.id, user, {}, function(err, theuser) {
+                Finance.findByIdAndUpdate(current.id, finance, {}, function(err, thefinane) {
                     if (err) { return res.status(400).send(err); }
                     // Success
-                    return res.send({"message": "User successfuly updated."});
                 });
             }
-
+            // prev update
+            prev_finance = current;
         });
 
     });
