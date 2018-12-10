@@ -171,3 +171,57 @@ exports.finance_update = [
         }
     }
 ];
+
+// reclaculate total
+// TODO ENHANCEMETN : set start point
+recalculate_total = function(req, res, next) {
+    Finance.find()
+    .sort({'use_date': -1})
+    .exec( function(err, finances) {
+        if (err) { return res.status(500).send(err); }
+        // SUCCESS
+
+        prev_finance = null;
+        total = 0;
+        // loop all finances
+        finances.forEach(function(current) {
+            // first finance to store
+            if (prev_finance == null){
+                prev_finance = current;
+                // calc only current total
+                total = prev_finance.income - prev_finance.outcome
+            }
+            // other's total
+            else {
+                total = prev_finance.total + current.income - current.outcome
+            }
+
+            // if total is diffrent update
+            if (current.total != total) {
+
+                // Create Finance object
+                var finance = new Finance({
+                    order: prev_finance.order+1,
+                    use_date: current.use_date,
+                    usage: current.usage,
+                    detail: current.detail,
+                    user: current.user,
+                    income: current.income,
+                    outcome: current.outcome,
+                    total: total,
+                    check: current.check,
+                    _id: current.id
+                });
+
+                // update changed total
+                User.findByIdAndUpdate(req.params.id, user, {}, function(err, theuser) {
+                    if (err) { return res.status(400).send(err); }
+                    // Success
+                    return res.send({"message": "User successfuly updated."});
+                });
+            }
+
+        });
+
+    });
+}
