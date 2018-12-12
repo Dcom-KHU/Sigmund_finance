@@ -186,25 +186,31 @@ function recalculate_finances(req, res, next) {
 
         prev_finance = null;
         total = 0;
+        order = 0;
         // loop all finances
         finances.forEach(function(current) {
-            // first finance to store
-            if (prev_finance == null){
-                prev_finance = current;
-                // calc only current total
-                total = prev_finance.income - prev_finance.outcome;
+            // if check
+            if(current.check) {
+                // first finance to store
+                if (prev_finance == null){
+                    prev_finance = current;
+                    // calc only current total
+                    total = prev_finance.income - prev_finance.outcome;
+                    order = 1;
+                }
+                // other's total
+                else {
+                    total = prev_finance.total + current.income - current.outcome;
+                    order = prev_finance.order+1;
+                }
             }
-            // other's total
-            else {
-                total = prev_finance.total + current.income - current.outcome;
-            }
-
+            
             // if total is diffrent update
             if (current.total != total) {
 
                 // Create Finance object
                 var finance = new Finance({
-                    order: prev_finance.order+1,
+                    order: order,
                     use_date: current.use_date,
                     usage: current.usage,
                     detail: current.detail,
