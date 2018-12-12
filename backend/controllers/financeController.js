@@ -74,7 +74,7 @@ exports.finance_create = [
                     income: req.body.income,
                     outcome: req.body.outcome,
                     total: last_total,
-                    check: true,
+                    check: req.body.check,
                 });
 
                 finance.save(function(err) {
